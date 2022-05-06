@@ -2,7 +2,7 @@ from email import message
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-#host="localhost" ,database="fastDb",password="623264",user="postgres",cursor_factory=RealDictCursor
+#host="localhost" ,database="fastDb",password="123456",user="postgres",cursor_factory=RealDictCursor
 
 class DbManager():
 

@@ -1,17 +1,25 @@
 
 from email import message
+from sqlalchemy.exc import IntegrityError
 from msilib.schema import Error
 from typing import Optional
-from fastapi import Body, FastAPI, HTTPException, status
+from fastapi import Body, FastAPI, HTTPException, status,Depends
 from pydantic import BaseModel, validator
 from email_validator import validate_email, EmailNotValidError
 import re
 from DB import dbManager as DBM
 import time
+from DB import models
+from DB.SqlAlchemy import engine,get_db
+from sqlalchemy.orm import Session
+
+models.Base.metadata.create_all(bind=engine)
+
+
 
 host="localhost" 
 database="fastDb"
-password="623264"
+password="123456"
 user="postgres"
 
 while True:
@@ -21,7 +29,6 @@ while True:
         break
 
     time.sleep(3)
-
 
 
 
@@ -70,25 +77,36 @@ class UserModel(BaseModel):
             
 
 
-
+@app.get("/sql")
+def test(db: Session = Depends(get_db)):
+    temp=db.query(models.User).all()
+    return{"data":temp}
 
 @app.get("/")
 def root():
     return {"message": "Hello World"}
 
 @app.post("/users",status_code=status.HTTP_201_CREATED)
-def sign_up(user:UserModel):
+def sign_up(user:UserModel,db: Session = Depends(get_db)):
     #first name, last name , phone number , email, password
     #userList.append(user.dict())
     try:
-        newUser=dbm.createUser(user)
+        #newUser=dbm.createUser(user)
+        newUser=models.User(firstName=user.firstName,lastName=user.lastName,email=user.email,phoneNumber=user.phoneNumber,password=user.password)
+        db.add(newUser)
+        db.commit()
+        db.refresh(newUser)
         return newUser
+    except IntegrityError as err:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,detail=str("User already Exist"))
     except ValueError as err:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,detail=str(err))
 
 
 @app.get("/users")
-def get_users_list():
+def get_users_list(db: Session = Depends(get_db)):
+    Users=db.query(models.User).all()
+    return {"Users":Users}
     return dbm.selectUsers()
 
 @app.get("/users/{id}")
