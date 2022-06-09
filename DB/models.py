@@ -36,3 +36,9 @@ class EngDef(Base):
     noun_id=Column(Integer,ForeignKey("Nouns.id",ondelete="CASCADE"),nullable=False)
     createdTime=Column(TIMESTAMP(timezone=False),nullable=False,server_default=text("now()"))
     owner=relationship("Noun")
+
+
+class Like(Base):
+    __tablename__="Likes"
+    user_id=Column(Integer,ForeignKey("Users.id",ondelete="CASCADE"),nullable=False,primary_key=True)
+    noun_id=Column(Integer,ForeignKey("Nouns.id",ondelete="CASCADE"),nullable=False,primary_key=True)

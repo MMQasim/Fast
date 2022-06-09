@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status,Depends,Response,APIRouter
-from .. import schema,utils
+from .. import schema,utils,oauth2
 from sqlalchemy.orm import Session
 from DB.SqlAlchemy import get_db
 from DB import models
@@ -34,13 +34,16 @@ def create_user(user:schema.UserModel,db: Session = Depends(get_db)):
 
 
 @router.get("/",response_model=List[schema.AllUsers])
-def get_users_list(db: Session = Depends(get_db)):
+def get_users_list(db: Session = Depends(get_db), c_user=Depends(oauth2.get_current_user)):
+    print(c_user.id)
+    if not c_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=str("invalid user"))
     Users=db.query(models.User).all()
     return Users
     #return dbm.selectUsers()
 
 @router.get("/{id}",response_model=schema.UserOut)
-def get_user(id:int,db: Session = Depends(get_db)):
+def get_user(id:int,db: Session = Depends(get_db),c_user=Depends(oauth2.get_current_user)):
     
     user=db.query(models.User).filter(models.User.id==id).first()
     if not user:
@@ -48,7 +51,7 @@ def get_user(id:int,db: Session = Depends(get_db)):
     return user #dbm.selectUserById(id)
 
 @router.delete("/{id}",status_code=status.HTTP_204_NO_CONTENT)
-def delete_User(id:int,db: Session = Depends(get_db)):
+def delete_User(id:int,db: Session = Depends(get_db),c_user=Depends(oauth2.get_current_user)):
     t_user=db.query(models.User).filter(models.User.id==id).first()
     print(t_user)
     if not t_user:
@@ -59,7 +62,7 @@ def delete_User(id:int,db: Session = Depends(get_db)):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.patch("/{id}")
-def patch_user(id:int,user_data:schema.UpdateUser,db: Session = Depends(get_db)):
+def patch_user(id:int,user_data:schema.UpdateUser,db: Session = Depends(get_db),c_user=Depends(oauth2.get_current_user)):
     User_Query=db.query(models.User).filter(models.User.id==id)
     if not User_Query.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=str("Not Found"))

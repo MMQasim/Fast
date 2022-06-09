@@ -13,7 +13,6 @@ router=APIRouter(
 
 @router.post("/",response_model=schema.Token)
 def login(user_data:schema.Userlogin,db: Session = Depends(get_db)):
-    print(user_data.email)
     user=db.query(models.User).filter(models.User.email==user_data.email).first()
     try:
         if not user:

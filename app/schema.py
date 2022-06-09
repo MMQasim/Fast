@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, validator,EmailStr
 from email_validator import validate_email, EmailNotValidError
 from fastapi import  HTTPException, status
@@ -77,3 +78,22 @@ class UpdateUser(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class TokenData(BaseModel):
+    id:Optional[str] = None
+    email:Optional[str] = None
+
+class Word(BaseModel):
+    id:int
+    artical:str
+    noun:str
+
+    class Config:
+        orm_mode=True
+
+class Defination(BaseModel):
+    definition:str
+    owner:Word
+    class Config:
+        orm_mode=True
+
