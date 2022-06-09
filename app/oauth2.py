@@ -9,9 +9,7 @@ from DB.SqlAlchemy import get_db
 from .config import settings
 
 SECRET_KEY = settings.secret_key
-#"usinw3yHTj19KMKrcnGkxS3cIAxo73Dm4OI0jFPgjU1NNMAe6geLi4zklRk39WdHNlHGxNmryb4eIW6OKWg2pByBUQsglyVOYt9SwAzYvjZ7ciDILq78KERajY3w4A94dI9W57uf9ehsV0GPtHcueT5yRkTBKtdgkD5lHP"
 ALGORITHM = settings.algorithm
-#"HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl="login")
