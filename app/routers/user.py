@@ -35,7 +35,7 @@ def create_user(user:schema.UserModel,db: Session = Depends(get_db)):
 
 @router.get("/",response_model=List[schema.AllUsers])
 def get_users_list(db: Session = Depends(get_db), c_user=Depends(oauth2.get_current_user)):
-    print(c_user.id)
+    
     if not c_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=str("invalid user"))
     Users=db.query(models.User).all()

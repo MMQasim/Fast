@@ -97,3 +97,14 @@ class Defination(BaseModel):
     class Config:
         orm_mode=True
 
+class Like_in(BaseModel):
+    noun_id:int
+    dir:int
+
+    @validator('dir')
+    def dir_validation(cls,v):
+        
+        if (v==1 or v==0):
+            return v
+        else:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,detail="Incorect Direction Value")
